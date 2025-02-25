@@ -1,95 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wordle Clone</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            text-align: center;
-            background-color: #121213;
-            color: white;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-        }
-        h1 {
-            margin-bottom: 10px;
-            font-size: 32px;
-        }
-        #board {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 20px;
-        }
-        .row {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-        .letter, #guess {
-            width: 60px;
-            height: 60px;
-            font-size: 28px;
-            font-weight: bold;
-            text-transform: uppercase;
-            text-align: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border: 2px solid #555;
-            background-color: #222;
-            color: white;
-            border-radius: 5px;
-            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-        }
-        .green {
-            background-color: #538d4e;
-            border-color: #538d4e;
-        }
-        .yellow {
-            background-color: #b59f3b;
-            border-color: #b59f3b;
-        }
-        .gray {
-            background-color: #3a3a3c;
-            border-color: #3a3a3c;
-        }
-        #guess {
-            display: flex;
-            gap: 10px;
-            outline: none;
-            border: 2px solid white;
-            background-color: #222;
-            width: 330px; /* Matches five-letter layout */
-            height: 60px;
-            font-size: 28px;
-            letter-spacing: 10px;
-        }
-        #guess:focus {
-            border-color: #538d4e;
-        }
-        #restart {
-            margin-top: 15px;
-            padding: 10px 20px;
-            font-size: 18px;
-            background-color: #538d4e;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        #restart:hover {
-            background-color: #436c3d;
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1"></script>
 </head>
 <body>
 
@@ -105,6 +19,7 @@
         let words = [];
         let targetWord = "";
 
+        // Load words from words.txt
         async function loadWords() {
             try {
                 const response = await fetch("words.txt");
@@ -116,6 +31,7 @@
             }
         }
 
+        // Pick a random word from the list
         function pickRandomWord() {
             targetWord = words[Math.floor(Math.random() * words.length)];
             console.log("Target Word:", targetWord); // Debugging - remove in production
@@ -176,7 +92,7 @@
             document.getElementById("guess").value = "";
 
             if (input === targetWord) {
-                // alert("🎉 Congratulations! You guessed the word.");
+                triggerConfetti();
                 disableInput();
             }
         }
@@ -190,6 +106,31 @@
             document.getElementById("guess").value = "";
             document.getElementById("guess").disabled = false;
             pickRandomWord();
+        }
+
+        // 🎉 Confetti Effect
+        function triggerConfetti() {
+            const duration = 3 * 1000; // 3 seconds
+            const end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            })();
         }
     </script>
 
