@@ -1,5 +1,6 @@
 let words = [];
 let targetWord = "";
+const letterStatus = {}; // Tracks used letters
 
 // Load words from words.txt
 async function loadWords() {
@@ -16,11 +17,40 @@ async function loadWords() {
 // Pick a random word from the list
 function pickRandomWord() {
     targetWord = words[Math.floor(Math.random() * words.length)];
-    console.log("Target Word:", targetWord); // Debugging - remove in production
+    console.log("Target Word:", targetWord);
+}
+
+// Generate Keyboard UI (Now in QWERTY Layout)
+function generateKeyboard() {
+    const keyboardDiv = document.getElementById("keyboard");
+    keyboardDiv.innerHTML = "";
+
+    const rows = [
+        "qwertyuiop",
+        "asdfghjkl",
+        "zxcvbnm"
+    ];
+
+    rows.forEach(row => {
+        const rowDiv = document.createElement("div");
+        rowDiv.className = "keyboard-row";
+
+        row.split("").forEach(letter => {
+            const key = document.createElement("div");
+            key.className = "key";
+            key.textContent = letter;
+            key.id = `key-${letter}`;
+            rowDiv.appendChild(key);
+        });
+
+        keyboardDiv.appendChild(rowDiv);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", function () {
     loadWords();
+    generateKeyboard();
+    
     const inputField = document.getElementById("guess");
 
     inputField.addEventListener("keypress", function (event) {
@@ -56,6 +86,7 @@ function checkGuess() {
         if (letter === targetArray[i]) {
             letterBox.classList.add("green");
             remainingLetters[i] = null;
+            updateKeyboard(letter, "green");
         }
 
         row.appendChild(letterBox);
@@ -65,8 +96,10 @@ function checkGuess() {
         if (letter !== targetArray[i] && remainingLetters.includes(letter)) {
             row.children[i].classList.add("yellow");
             remainingLetters[remainingLetters.indexOf(letter)] = null;
+            updateKeyboard(letter, "yellow");
         } else if (!row.children[i].classList.contains("green")) {
             row.children[i].classList.add("gray");
+            updateKeyboard(letter, "gray");
         }
     });
 
@@ -79,6 +112,15 @@ function checkGuess() {
     }
 }
 
+// Update keyboard colors based on letter status
+function updateKeyboard(letter, status) {
+    const keyElement = document.getElementById(`key-${letter}`);
+    if (keyElement && (!letterStatus[letter] || letterStatus[letter] !== "green")) {
+        keyElement.classList.add(status);
+        letterStatus[letter] = status;
+    }
+}
+
 function disableInput() {
     document.getElementById("guess").disabled = true;
 }
@@ -87,12 +129,19 @@ function restartGame() {
     document.getElementById("board").innerHTML = "";
     document.getElementById("guess").value = "";
     document.getElementById("guess").disabled = false;
+
+    // Reset keyboard
+    for (let letter in letterStatus) {
+        document.getElementById(`key-${letter}`).className = "key";
+    }
+    letterStatus = {};
+
     pickRandomWord();
 }
 
 // 🎉 Confetti Effect
 function triggerConfetti() {
-    const duration = 3 * 1000; // 3 seconds
+    const duration = 3 * 1000;
     const end = Date.now() + duration;
 
     (function frame() {
