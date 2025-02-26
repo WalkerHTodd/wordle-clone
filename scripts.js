@@ -8,7 +8,7 @@ async function loadWords() {
         const response = await fetch("words.txt");
         const text = await response.text();
         words = text.split("\n").map(word => word.trim().toLowerCase()).filter(word => word.length === 5);
-        pickRandomWord();
+        restoreGameState(); // Load saved state
     } catch (error) {
         console.error("Error loading words:", error);
     }
@@ -17,20 +17,16 @@ async function loadWords() {
 // Pick a random word from the list
 function pickRandomWord() {
     targetWord = words[Math.floor(Math.random() * words.length)];
+    localStorage.setItem("targetWord", targetWord); // Save target word
     console.log("Target Word:", targetWord);
 }
 
-// Generate Keyboard UI (Now in QWERTY Layout)
+// Generate Keyboard UI
 function generateKeyboard() {
     const keyboardDiv = document.getElementById("keyboard");
     keyboardDiv.innerHTML = "";
 
-    const rows = [
-        "qwertyuiop",
-        "asdfghjkl",
-        "zxcvbnm"
-    ];
-
+    const rows = ["qwertyuiop", "asdfghjkl", "zxcvbnm"];
     rows.forEach(row => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "keyboard-row";
@@ -45,14 +41,15 @@ function generateKeyboard() {
 
         keyboardDiv.appendChild(rowDiv);
     });
+
+    restoreKeyboardState();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
     loadWords();
     generateKeyboard();
-    
-    const inputField = document.getElementById("guess");
 
+    const inputField = document.getElementById("guess");
     inputField.addEventListener("keypress", function (event) {
         if (event.key === "Enter") {
             checkGuess();
@@ -64,7 +61,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function checkGuess() {
     const input = document.getElementById("guess").value.toLowerCase().trim();
-
     if (input.length !== 5) {
         alert("Please enter a valid 5-letter word.");
         return;
@@ -106,6 +102,8 @@ function checkGuess() {
     document.getElementById("board").appendChild(row);
     document.getElementById("guess").value = "";
 
+    saveGameState(); // Save the updated game state
+
     if (input === targetWord) {
         triggerConfetti();
         disableInput();
@@ -118,13 +116,58 @@ function updateKeyboard(letter, status) {
     if (keyElement && (!letterStatus[letter] || letterStatus[letter] !== "green")) {
         keyElement.classList.add(status);
         letterStatus[letter] = status;
+        saveKeyboardState();
     }
 }
 
+// Save game state to localStorage
+function saveGameState() {
+    const boardState = document.getElementById("board").innerHTML;
+    localStorage.setItem("boardState", boardState);
+}
+
+// Restore previous game state
+function restoreGameState() {
+    const savedTargetWord = localStorage.getItem("targetWord");
+    const savedBoardState = localStorage.getItem("boardState");
+
+    if (savedTargetWord && words.includes(savedTargetWord)) {
+        targetWord = savedTargetWord;
+    } else {
+        pickRandomWord();
+    }
+
+    if (savedBoardState) {
+        document.getElementById("board").innerHTML = savedBoardState;
+    }
+}
+
+// Save keyboard state
+function saveKeyboardState() {
+    localStorage.setItem("keyboardState", JSON.stringify(letterStatus));
+}
+
+// Restore keyboard state
+function restoreKeyboardState() {
+    const savedKeyboardState = localStorage.getItem("keyboardState");
+    if (savedKeyboardState) {
+        const storedLetterStatus = JSON.parse(savedKeyboardState);
+        for (const letter in storedLetterStatus) {
+            const keyElement = document.getElementById(`key-${letter}`);
+            if (keyElement) {
+                keyElement.classList.add(storedLetterStatus[letter]);
+                letterStatus[letter] = storedLetterStatus[letter];
+            }
+        }
+    }
+}
+
+// Disable input when game is won
 function disableInput() {
     document.getElementById("guess").disabled = true;
 }
 
+// Restart game and clear localStorage
 function restartGame() {
     document.getElementById("board").innerHTML = "";
     document.getElementById("guess").value = "";
@@ -134,8 +177,9 @@ function restartGame() {
     for (let letter in letterStatus) {
         document.getElementById(`key-${letter}`).className = "key";
     }
+    localStorage.clear();
     letterStatus = {};
-
+    
     pickRandomWord();
 }
 
