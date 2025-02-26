@@ -66,6 +66,7 @@ h1 {
     font-size: 28px;
     letter-spacing: 10px;
 }
+
 #guess::placeholder {
     color: #bbb;  /* Light gray placeholder */
     font-size: 18px;
