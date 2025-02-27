@@ -1,3 +1,4 @@
+/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     text-align: center;
@@ -9,12 +10,16 @@ body {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 100vh;
+    min-height: 100vh;
 }
+
+/* Game Title */
 h1 {
     margin-bottom: 10px;
     font-size: 32px;
 }
+
+/* Game Board */
 #board {
     display: flex;
     flex-direction: column;
@@ -22,18 +27,19 @@ h1 {
     gap: 8px;
     margin-bottom: 20px;
 }
+
 .row {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 5px;
 }
-.letter, #guess {
-    width: 60px;
-    height: 60px;
-    font-size: 28px;
+
+.letter {
+    width: 50px;
+    height: 50px;
+    font-size: 24px;
     font-weight: bold;
     text-transform: uppercase;
-    text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -43,19 +49,71 @@ h1 {
     border-radius: 5px;
     box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
-#keyboard {
+
+#guess {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    max-width: 400px;
-    margin-top: 20px;
+    gap: 10px;
+    outline: none;
+    border: 2px solid white;
+    background-color: #222;
+    width: 90%; /* Dynamic width */
+    max-width: 390px;
+    height: 50px;
+    font-size: 24px;
+    letter-spacing: 8px;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: bold;
+    color: white;
 }
+
+/* Ensure input text is always visible */
+#guess::placeholder {
+    color: rgba(255, 255, 255, 0.5); /* Lighter gray for better contrast */
+    font-size: 18px;
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+#guess:focus {
+    border-color: #538d4e;
+    background-color: #333; /* Slightly lighter background */
+}
+
+/* Fix mobile input text size */
+@media (max-width: 480px) {
+    #guess {
+        height: 45px;
+        font-size: 20px;
+        letter-spacing: 6px;
+        width: 95%;
+    }
+}
+
+/* Button Styling */
+#restart {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 18px;
+    background-color: #538d4e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#restart:hover {
+    background-color: #436c3d;
+}
+
+/* Virtual Keyboard */
 #keyboard {
     display: flex;
     flex-direction: column;
     align-items: center;
     margin-top: 20px;
-    max-width: 350px;
+    max-width: 100%;
+    padding: 0 10px;
 }
 
 .keyboard-row {
@@ -66,10 +124,10 @@ h1 {
 }
 
 .key {
-    width: 35px;
+    width: 38px;
     height: 50px;
     margin: 3px;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: bold;
     text-transform: uppercase;
     display: flex;
@@ -82,14 +140,44 @@ h1 {
     cursor: pointer;
 }
 
+/* Mobile Adjustments */
 @media (max-width: 480px) {
-    .key {
-        width: 30px;
+    h1 {
+        font-size: 24px;
+    }
+
+    #board {
+        gap: 5px;
+        margin-bottom: 15px;
+    }
+
+    .letter {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+
+    #guess {
         height: 45px;
-        font-size: 18px;
+        font-size: 20px;
+        letter-spacing: 6px;
+        width: 95%;
+    }
+
+    .key {
+        width: 32px;
+        height: 45px;
+        font-size: 16px;
+        margin: 2px;
+    }
+
+    #restart {
+        font-size: 16px;
+        padding: 8px 16px;
     }
 }
 
+/* Colors */
 .green {
     background-color: #538d4e;
     border-color: #538d4e;
@@ -103,41 +191,4 @@ h1 {
 .gray {
     background-color: #3a3a3c;
     border-color: #3a3a3c;
-}
-
-#guess {
-    display: flex;
-    gap: 10px;
-    outline: none;
-    border: 2px solid white;
-    background-color: #222;
-    width: 390px; /* Matches five-letter layout */
-    height: 60px;
-    font-size: 28px;
-    letter-spacing: 10px;
-}
-
-#guess::placeholder {
-    color: #bbb;  /* Light gray placeholder */
-    font-size: 18px;
-    text-align: center;
-    text-transform: none; /* Keep placeholder lowercase */
-    letter-spacing: normal;
-}
-
-#guess:focus {
-    border-color: #538d4e;
-}
-#restart {
-    margin-top: 15px;
-    padding: 10px 20px;
-    font-size: 18px;
-    background-color: #538d4e;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-#restart:hover {
-    background-color: #436c3d;
 }
