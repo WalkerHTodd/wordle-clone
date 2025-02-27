@@ -64,6 +64,7 @@ function checkGuess() {
     if (input.length !== 6) {
         alert("Please enter a valid 6-letter word.");
         return;
+        
     }
 
     const row = document.createElement("div");
