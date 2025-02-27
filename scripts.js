@@ -1,6 +1,6 @@
 let words = [];
-let targetWord = "";
-const letterStatus = {}; // Tracks used letters
+let targetWord = ""; // Now targetWord can be reassigned
+let letterStatus = {}
 
 // Load words from words.txt
 async function loadWords() {
@@ -132,16 +132,22 @@ function restoreGameState() {
     const savedTargetWord = localStorage.getItem("targetWord");
     const savedBoardState = localStorage.getItem("boardState");
 
-    if (savedTargetWord && words.includes(savedTargetWord)) {
-        targetWord = savedTargetWord;
+    // Prevent restoring an old word after restart
+    if (!savedTargetWord || !words.includes(savedTargetWord)) {
+        pickRandomWord(); // Pick a new word if none exists
+        localStorage.setItem("targetWord", targetWord);
     } else {
-        pickRandomWord();
+        targetWord = savedTargetWord; // Restore the word only if it's valid
     }
+
+    console.log("Restored Word:", targetWord); // Debugging
 
     if (savedBoardState) {
         document.getElementById("board").innerHTML = savedBoardState;
     }
 }
+
+
 
 // Save keyboard state
 function saveKeyboardState() {
@@ -174,15 +180,23 @@ function restartGame() {
     document.getElementById("guess").value = "";
     document.getElementById("guess").disabled = false;
 
-    // Reset keyboard
-    for (let letter in letterStatus) {
-        document.getElementById(`key-${letter}`).className = "key";
-    }
-    localStorage.clear();
+    // Remove old stored game data
+    localStorage.removeItem("targetWord");
+    localStorage.removeItem("boardState");
+    localStorage.removeItem("keyboardState");
+
+    // Reset keyboard colors
     letterStatus = {};
-    
+    generateKeyboard();
+
+    // Force a new word selection and save it immediately
     pickRandomWord();
+    localStorage.setItem("targetWord", targetWord);
+
+    console.log("New Word After Restart:", targetWord); // Debugging
 }
+
+
 
 // 🎉 Confetti Effect
 function triggerConfetti() {
