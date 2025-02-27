@@ -111,7 +111,7 @@ h1 {
     outline: none;
     border: 2px solid white;
     background-color: #222;
-    width: 330px; /* Matches five-letter layout */
+    width: 390px; /* Matches five-letter layout */
     height: 60px;
     font-size: 28px;
     letter-spacing: 10px;

@@ -7,7 +7,7 @@ async function loadWords() {
     try {
         const response = await fetch("words.txt");
         const text = await response.text();
-        words = text.split("\n").map(word => word.trim().toLowerCase()).filter(word => word.length === 5);
+        words = text.split("\n").map(word => word.trim().toLowerCase()).filter(word => word.length === 6);
         restoreGameState(); // Load saved state
     } catch (error) {
         console.error("Error loading words:", error);
@@ -61,8 +61,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function checkGuess() {
     const input = document.getElementById("guess").value.toLowerCase().trim();
-    if (input.length !== 5) {
-        alert("Please enter a valid 5-letter word.");
+    if (input.length !== 6) {
+        alert("Please enter a valid 6-letter word.");
         return;
     }
 
